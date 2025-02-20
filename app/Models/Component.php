@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Component extends Model
+{
+    use HasFactory;
+    protected $fillable = ['name_component', 'subtitle_component', 'price_component', 'description_component', 
+    'consumption_component', 'review_component', 'image_component',
+     'video_component', 'release_date_component', 'type_component', 'category_id', 'brand_id'];	
+
+     public function brand(){
+        return $this->belongsTo(Brand::class);
+     }
+     public function category(){
+        return $this->belongsTo(Category::class);
+     }
+}

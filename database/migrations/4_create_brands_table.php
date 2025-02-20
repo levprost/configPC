@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
+            $table->string('name_brand');
+            $table->string('logo_brand');
+            $table->text('description_brand');
+            $table->string('color_brand')->default('#767680');
             $table->timestamps();
         });
     }

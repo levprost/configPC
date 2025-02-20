@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('components', function (Blueprint $table) {
+        Schema::create('configuration_component', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('configuration_id')->constrained()->onDelete('cascade');
+            $table->foreignId('component_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('components');
+        Schema::dropIfExists('configuration_component');
     }
 };

@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
+            $table->string('title_post');
+            $table->text('content_post');
+            $table->text('content_post_1');
+            $table->text('content_post_2');
+            $table->string('subtitle_post');
+            $table->text('description_post');
+            $table->boolean('is_published')->default(false);
+            $table->integer('order_post')->nullable();
+            $table->foreignId('user_id')->constrained();	
             $table->timestamps();
         });
     }
@@ -21,6 +30,7 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
+    
     {
         Schema::dropIfExists('posts');
     }
