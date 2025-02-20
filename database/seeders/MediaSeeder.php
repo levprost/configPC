@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Post;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Media;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class PostSeeder extends Seeder
+class MediaSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Post::factory(30)->create();
+        Media::factory(30)->create();
     }
 }

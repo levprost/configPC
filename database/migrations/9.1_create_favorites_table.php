@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_configuration', function (Blueprint $table) {
+        Schema::create('user_configurations', function (Blueprint $table) {
             $table->id();
             $table->text('comment_favorite')->nullable();
             $table->decimal('rating_favorite', 2, 1);
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('user_configuration');
     }
 };

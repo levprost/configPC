@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Post;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Configuration;
 
-class PostSeeder extends Seeder
+class ConfigurationSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Post::factory(30)->create();
+        Configuration::factory(10)->create();
     }
 }
