@@ -13,7 +13,10 @@ class ComponentController extends Controller
      */
     public function index()
     {
-        //
+        $components = Component::all()->with(['category', 'brand']);
+        return response()->json([
+            'components' => $components,
+        ]);
     }
 
     /**
@@ -21,7 +24,7 @@ class ComponentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
