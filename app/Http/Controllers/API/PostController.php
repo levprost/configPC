@@ -13,7 +13,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::all()->load('media');
+        return response()->json($posts);
     }
 
     /**
@@ -21,7 +22,21 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $formFields = $request->validate([
+            'title_post' => 'required|string',
+            'content_post' => 'required',
+            'content_post_1' => 'required',
+            'content_post_2' => 'required',
+            'subtitle_post' => 'required|string',
+            'description_post' => 'required|string',
+            'is_published' => 'required|boolean',
+            'order_post' => 'sometimes|integer',
+            'user_id' => 'required|integer',
+        ]);
+        Post::create($formFields);
+        return response()->json([
+            'status' => 'Création effectuée avec succès'
+        ]);
     }
 
     /**
@@ -29,7 +44,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return response()->json($post);
     }
 
     /**
@@ -37,7 +52,21 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $formFields = $request->validate([
+            'title_post' => 'required|string',
+            'content_post' => 'required',
+            'content_post_1' => 'required',
+            'content_post_2' => 'required',
+            'subtitle_post' => 'required|string',
+            'description_post' => 'required|string',
+            'is_published' => 'required|boolean',
+            'order_post' => 'sometimes|integer',
+            'user_id' => 'required|integer',
+        ]);
+        $post->update($formFields);
+        return response()->json([
+            'status' => 'Mise à jour effectuée avec succès'
+        ]);
     }
 
     /**
@@ -45,6 +74,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return response()->json([
+            'status' => 'Suppression effectuée avec succès'
+        ]);
     }
 }
