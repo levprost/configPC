@@ -13,7 +13,8 @@ class UserConfigurationController extends Controller
      */
     public function index()
     {
-        //
+        $userConfigurations = UserConfiguration::all();
+        return response()->json($userConfigurations);
     }
 
     /**
@@ -21,7 +22,16 @@ class UserConfigurationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $formFields = $request->validate([
+            'comment_favorite' => 'sometimes|string',
+            'rating_favorite' => 'required|numeric',
+            'configuration_id' => 'required|integer',
+            'user_id' => 'required|integer',
+        ]);
+        UserConfiguration::create($formFields);
+        return response()->json([
+            'status' => 'Création effectuée avec succès'
+        ]);
     }
 
     /**
@@ -29,7 +39,7 @@ class UserConfigurationController extends Controller
      */
     public function show(UserConfiguration $userConfiguration)
     {
-        //
+        return response()->json($userConfiguration);
     }
 
     /**
@@ -37,7 +47,14 @@ class UserConfigurationController extends Controller
      */
     public function update(Request $request, UserConfiguration $userConfiguration)
     {
-        //
+        $formFields = $request->validate([
+            'comment_favorite' => 'sometimes|string',
+            'rating_favorite' => 'required|numeric',
+        ]);
+        $userConfiguration->update($formFields);
+        return response()->json([
+            'status' => 'Mise à jour effectuée avec succès'
+        ]);
     }
 
     /**
@@ -45,6 +62,9 @@ class UserConfigurationController extends Controller
      */
     public function destroy(UserConfiguration $userConfiguration)
     {
-        //
+        $userConfiguration->delete();
+        return response()->json([
+            'status' => 'Suppression effectuée avec succès'
+        ]);
     }
 }
