@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Models\Post;
+use App\Models\User;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class CommentController extends Controller
 {
@@ -13,9 +15,21 @@ class CommentController extends Controller
      */
     public function index()
     {
-        $comments = Comment::all()->with(['user', 'post']);
+        $comments = Comment::with('user')->get();
         return response()->json([
-            'comments' => $comments,
+            $comments,
+        ]);
+    }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'content_comment' => 'required|string',
+            'post_id' => 'required|integer',
+            'user_id' => 'required|integer',
+        ]);
+        Comment::create($request->all());
+        return response()->json([
+            'status' => 'Création effectuée avec succès'
         ]);
     }
 

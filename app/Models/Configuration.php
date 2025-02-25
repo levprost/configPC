@@ -23,8 +23,16 @@ class Configuration extends Model
     {
         return $this->hasMany(UserConfiguration::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id'); // 'user_id' - внешний ключ
+    }
     public function components()
     {
-        return $this->hasMany(Component::class);
+        return $this->belongsToMany(Component::class, 'configuration_component');
+    }
+    public function userConfiguration()
+    {
+        return $this->hasMany(UserConfiguration::class);
     }
 }

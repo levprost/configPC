@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Component;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -56,6 +57,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        Component::where('category_id', $category->id)->delete();
+        $category->delete();
+        return response()->json([
+            'status' => 'Suppression effectuée avec succès'
+        ]);
     }
 }

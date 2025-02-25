@@ -32,8 +32,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
-
+    public function configuration()
+    {
+        return $this->hasMany(Configuration::class);
+    }
+    public function userConfiguration()
+    {
+        return $this->hasMany(UserConfiguration::class);
+    }
     /**
+     * 
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>

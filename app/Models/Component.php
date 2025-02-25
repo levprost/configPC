@@ -18,4 +18,8 @@ class Component extends Model
      public function category(){
         return $this->belongsTo(Category::class);
      }
+     public function configurations()
+    {
+        return $this->belongsToMany(Configuration::class, 'configuration_component');
+    }
 }
