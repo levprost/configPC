@@ -23,7 +23,16 @@ Route::apiResource("categories", CategoryController::class);
 Route::apiResource("comments", CommentController::class);
 Route::apiResource("media", MediaController::class);
 Route::apiResource("configurations", ConfigurationController::class);
-Route::apiResource("posts", PostController::class);
 Route::apiResource("contacts", ContactController::class);
 Route::apiResource("components", ComponentController::class);
 Route::apiResource("UserConfigurations", UserConfigurationController::class);
+
+
+//==============================POST==============================
+Route::get('posts/published', [PostController::class, 'indexPublished']);
+Route::get('/posts/order', [PostController::class, 'indexOrder']);
+Route::post('/posts', [PostController::class, 'store']);
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/{post}', [PostController::class, 'show']);
+Route::put('/posts/{post}', [PostController::class, 'update']);
+Route::delete('/posts/{post}', [PostController::class, 'destroy']);
