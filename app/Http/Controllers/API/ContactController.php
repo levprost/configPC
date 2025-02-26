@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class ContactController extends Controller
 {
@@ -61,6 +62,9 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         $contact->delete();
+        if($contact->image_contact) {
+            Storage::delete('uploads/' . $contact->image_contact);
+        }
         return response()->json([
             'status' => 'Suppression effectuée avec succès'
         ]);

@@ -71,7 +71,8 @@ class ConfigurationController extends Controller
         'user_id' => $request->user_id
     ]);
 
-    // 🔹 Привязываем компоненты
+
+    
     $configuration->components()->attach($request->components);
 
     return response()->json([
