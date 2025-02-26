@@ -23,11 +23,16 @@ class UserConfigurationController extends Controller
     public function store(Request $request)
     {
         $formFields = $request->validate([
-            'comment_favorite' => 'sometimes|string',
-            'rating_favorite' => 'required|numeric',
+            'comment_favorite' => 'nullable|string',
+            'rating_favorite' => 'required|numeric|min:1|max:5',
             'configuration_id' => 'required|integer',
             'user_id' => 'required|integer',
         ]);
+        if(UserConfiguration::where('user_id', $formFields['user_id'])->where('configuration_id', $formFields['configuration_id'])->exists()){
+            return response()->json([
+                'status' => 'Configuration déjà existante'
+            ]);
+        }
         UserConfiguration::create($formFields);
         return response()->json([
             'status' => 'Création effectuée avec succès'
