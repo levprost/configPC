@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Component;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class ComponentController extends Controller
 {
@@ -15,7 +16,7 @@ class ComponentController extends Controller
      */
     public function index()
     {
-        $components = Component::all()->with(['category', 'brand']);
+        $components = Component::all()->load(['category', 'brand']);
         return response()->json([
             'components' => $components,
         ]);
@@ -26,40 +27,35 @@ class ComponentController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $formFields = $request->validate([
             'name_component' => 'required|string',
             'subtitle_component' => 'required|string',
             'price_component' => 'required|numeric',
             'description_component' => 'required',
             'consumption_component' => 'required|integer',
             'review_component' => 'required',
-            'image_component' => 'required|string',
+            'image_component' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'video_component' => 'required|string',
             'release_date_component' => 'required|date',
             'type_component' => 'required|string',
             'category_id' => 'required|integer',
             'brand_id' => 'required|integer',
         ]);
-        Component::create($request->all());
+        $filename="";
+        if ($request->hasFile('image_component')) {
+            $filenameWithExt = $request->file('image_component')->getClientOriginalName();
+            $filenameWithExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image_component')->getClientOriginalExtension();
+            $filename = $filenameWithExt . '_' . time() . '.' . $extension;
+            $request->file('image_component')->storeAs('uploads', $filename);
+        } else {
+            $filename = Null;
+        }
+        $formFields['image_component'] = $filename;
+        Component::create($formFields);
         return response()->json([
             'status' => 'Création effectuée avec succès'
         ]);
-        // Schema::create('components', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->string('name_component');
-        //     $table->string('subtitle_component')->nullable();
-        //     $table->decimal('price_component');
-        //     $table->text('description_component');
-        //     $table->integer('consumption_component');
-        //     $table->text('review_component');
-        //     $table->string('image_component')->nullable();
-        //     $table->string('video_component')->nullable();
-        //     $table->date('release_date_component');
-        //     $table->string('type_component')->nullable();
-        //     $table->foreignId('category_id')->constrained();
-        //     $table->foreignId('brand_id')->constrained();
-        //     $table->timestamps();
-        // });
     }
 
     /**
@@ -86,13 +82,26 @@ class ComponentController extends Controller
             'description_component' => 'sometimes',
             'consumption_component' => 'sometimes|integer',
             'review_component' => 'sometimes',
-            'image_component' => 'sometimes|string',
+            'image_component' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg',
             'video_component' => 'sometimes|string',
             'release_date_component' => 'sometimes|date',
             'type_component' => 'sometimes|string',
             'category_id' => 'sometimes|integer',
             'brand_id' => 'sometimes|integer',
         ]);
+        if ($request->hasFile('image_component')) {
+            if ($component->image_component && Storage::exists('uploads/' . $component->image_component)) {
+                Storage::delete('uploads/' . $component->image_component);
+            }
+            $filenameWithExt = $request->file('image_component')->getClientOriginalName();
+            $filenameWithExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image_component')->getClientOriginalExtension();
+            $filename = $filenameWithExt . '_' . time() . '.' . $extension;
+            $request->file('image_component')->storeAs('uploads', $filename);
+            $formFields['image_component'] = $filename;
+        } else {
+            $formFields['image_component'] = $component->image_component; // Keep the old image
+        }
         $component->update($formFields);
         return response()->json([$component,'status' => 'Mise à jour effectuée avec succès']);
     }
@@ -103,6 +112,9 @@ class ComponentController extends Controller
     public function destroy(Component $component)
     {
         $component->delete();
+        if($component->image_component) {
+            Storage::delete('uploads/' . $component->image_component);
+        }
         return response()->json([
             'status' => 'Suppression effectuée avec succès'
         ]);
