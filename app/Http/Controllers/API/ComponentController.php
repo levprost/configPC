@@ -21,6 +21,21 @@ class ComponentController extends Controller
             'components' => $components,
         ]);
     }
+    
+    public function indexByCategory($category_id)
+    {
+        $components = Component::where('category_id', $category_id)->get()->load('brand');
+        return response()->json([
+            'components' => $components,
+        ]);
+    }
+    public function indexByBrand($brand_id)
+    {
+        $components = Component::where('brand_id', $brand_id)->get()->load('category');
+        return response()->json([
+            'components' => $components,
+        ]);
+    }
 
     /**
      * Store a newly created resource in storage.

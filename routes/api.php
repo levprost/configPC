@@ -4,7 +4,9 @@ use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Models\UserConfiguration;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\API\PostController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\MediaController;
 use App\Http\Controllers\API\CommentController;
@@ -24,7 +26,6 @@ Route::apiResource("comments", CommentController::class);
 Route::apiResource("media", MediaController::class);
 Route::apiResource("configurations", ConfigurationController::class);
 Route::apiResource("contacts", ContactController::class);
-Route::apiResource("components", ComponentController::class);
 Route::apiResource("UserConfigurations", UserConfigurationController::class);
 
 
@@ -36,3 +37,21 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 Route::put('/posts/{post}', [PostController::class, 'update']);
 Route::delete('/posts/{post}', [PostController::class, 'destroy']);
+
+//==============================COMPONENT==============================
+Route::get('/components', [ComponentController::class, 'index']);
+Route::get('/components/category/{category_id}', [ComponentController::class, 'indexByCategory']);
+Route::get('/components/brand/{brand_id}', [ComponentController::class, 'indexByBrand']);
+Route::post('/components', [ComponentController::class, 'store']);
+Route::get('/components/{component}', [ComponentController::class, 'show']);
+Route::put('/components/{component}', [ComponentController::class, 'update']);
+Route::delete('/components/{component}', [ComponentController::class, 'destroy']);
+
+//================================USER==============================
+
+Route::post('/register', [AuthController::class, 'register']); 
+Route::post('/login', [AuthController::class, 'login']); 
+Route::middleware('auth:api')->group(function() { 
+Route::get('/currentuser', [UserController::class, 'currentUser']); 
+Route::post('/logout', [AuthController::class, 'logout']); 
+});
