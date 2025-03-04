@@ -23,33 +23,54 @@ class MediaController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $formFields = $request->validate([
-            'media_file.*' => 'required|file|mimes:jpeg,png,jpg,gif,svg,mp4,mov,avi,wmv',
-            'media_type' => 'required|string',
-            'post_id' => 'required|integer',
-        ]);
+{
+    // Validate incoming data
+    $formFields = $request->validate([
+        'media_file.*' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'media_type.*' => 'required|string',
+        'post_id' => 'required|integer|exists:posts,id',
+    ]);
 
-        if ($request->hasFile('media_file')) {
-            foreach ($request->file('media_file') as $file) {
-                $filenameWithExt = $file->getClientOriginalName();
-                $filenameWithExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-                $extension = $file->getClientOriginalExtension();
-                $filename = $filenameWithExt . '_' . time() . '.' . $extension;
-                $file->storeAs('uploads', $filename);
+    // Array to store saved media files
+    $savedMedia = [];
 
-                Media::create([
-                    'media_file' => $filename,
-                    'media_type' => $formFields['media_type'],
-                    'post_id' => $formFields['post_id'],
-                ]);
-            }
+    // Check if files are uploaded
+    if ($request->hasFile('media_file')) {
+        // Check if the folder exists, if not, create it
+        if (!Storage::exists('uploads')) {
+            Storage::makeDirectory('uploads');
         }
 
-        return response()->json([
-            'status' => 'Création effectuée avec succès'
-        ]);
+        // Upload files
+        foreach ($request->file('media_file') as $index => $file) {
+            // Get the original file name and its extension
+            $filenameWithExt = $file->getClientOriginalName();
+            $filenameWithExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $filename = $filenameWithExt . '_' . time() . '.' . $extension;
+
+            // Save the file in the 'uploads' directory
+            $filePath = $file->storeAs('uploads', $filename);
+
+            // Create a record in the database for the media file
+            $media = new Media();
+            $media->post_id = $formFields['post_id'];
+            $media->media_file = $filename; // Save the file name
+            $media->media_type = $formFields['media_type'][$index]; // Media type (from array)
+            $media->save();
+
+            // Add the media to the array for returning or further use
+            $savedMedia[] = $media;
+        }
     }
+
+    // Return a response with a success status and the saved media data
+    return response()->json([
+        'status' => 'Media added successfully',
+        'data' => $savedMedia // Return the saved media
+    ]);
+}
+
 
     /**
      * Display the specified resource.
@@ -127,5 +148,4 @@ class MediaController extends Controller
         $media->delete();
         return response()->json('Media supprimé');
     }
-
 }

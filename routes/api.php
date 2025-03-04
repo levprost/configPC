@@ -50,9 +50,9 @@ Route::delete('/components/{component}', [ComponentController::class, 'destroy']
 
 //================================USER==============================
 
-Route::post('/register', [AuthController::class, 'register']); 
 Route::post('/login', [AuthController::class, 'login']); 
 Route::middleware('auth:api')->group(function() { 
-Route::middleware('auth:sanctum')->get('/currentuser', [UserController::class, 'currentUser']);
-Route::post('/logout', [AuthController::class, 'logout']); 
+    Route::get('/currentuser', [UserController::class, 'currentUser']); 
+    Route::post('/logout', [AuthController::class, 'logout']); 
+
 });

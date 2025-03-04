@@ -52,9 +52,13 @@ class PostController extends Controller
             'subtitle_post' => 'required|string',
             'description_post' => 'required|string',
             'is_published' => 'required|boolean',
-            'order_post' => 'sometimes|integer',
+            'order_post' => 'nullable|integer|min:1|max:10',
         ]);
+
         $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+        }
         $formFields['user_id'] = $user->id;
         Post::create($formFields);
         return response()->json([
