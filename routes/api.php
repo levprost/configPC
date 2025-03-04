@@ -30,10 +30,11 @@ Route::apiResource("UserConfigurations", UserConfigurationController::class);
 
 
 //==============================POST==============================
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/last', [PostController::class, 'last']);
 Route::get('posts/published', [PostController::class, 'indexPublished']);
 Route::get('/posts/order', [PostController::class, 'indexOrder']);
 Route::post('/posts', [PostController::class, 'store']);
-Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 Route::put('/posts/{post}', [PostController::class, 'update']);
 Route::delete('/posts/{post}', [PostController::class, 'destroy']);
@@ -52,6 +53,6 @@ Route::delete('/components/{component}', [ComponentController::class, 'destroy']
 Route::post('/register', [AuthController::class, 'register']); 
 Route::post('/login', [AuthController::class, 'login']); 
 Route::middleware('auth:api')->group(function() { 
-Route::get('/currentuser', [UserController::class, 'currentUser']); 
+Route::middleware('auth:sanctum')->get('/currentuser', [UserController::class, 'currentUser']);
 Route::post('/logout', [AuthController::class, 'logout']); 
 });

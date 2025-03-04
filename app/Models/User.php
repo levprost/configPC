@@ -20,10 +20,15 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'nick_name',
-        'email_user',
+        'email',
         'role',
         'password',
     ];
+
+    public function getAuthIdentifierName()
+    {
+        return 'email';
+    }
 
     public function comment()
     {

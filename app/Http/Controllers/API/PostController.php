@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Storage;
+use PHPOpenSourceSaver\JWTAuth\Contracts\Providers\Auth;
 
 class PostController extends Controller
 {
@@ -20,13 +21,18 @@ class PostController extends Controller
         $posts = Post::all()->load('media');
         return response()->json($posts);
     }
+    public function last()
+    {
+        $lastPost = Post::latest()->first();
+        return response()->json($lastPost);
+    }
     public function indexPublished()
     {
         $posts = Post::where('is_published', true)->get()->load('media');
         return response()->json($posts);
     }
     public function indexOrder()
-    {   
+    {
         $posts = DB::table('posts')
             ->where('order_post', '!=', null)
             ->orderBy('order_post', 'asc')
@@ -47,8 +53,9 @@ class PostController extends Controller
             'description_post' => 'required|string',
             'is_published' => 'required|boolean',
             'order_post' => 'sometimes|integer',
-            'user_id' => 'required|integer',
         ]);
+        $user = auth()->user();
+        $formFields['user_id'] = $user->id;
         Post::create($formFields);
         return response()->json([
             'status' => 'Création effectuée avec succès'
@@ -77,8 +84,8 @@ class PostController extends Controller
             'description_post' => 'sometimes|string',
             'is_published' => 'sometimes|boolean',
             'order_post' => 'sometimes|integer',
-            'user_id' => 'sometimes|integer',
         ]);
+        // Get the authenticated user
         $post->update($formFields);
         return response()->json([
             'status' => 'Mise à jour effectuée avec succès'
@@ -91,9 +98,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         Media::where('post_id', $post->id)->delete();
-        if($post->media->count() > 0) {
-            foreach($post->media as $media) {
-                if($media->media_file && Storage::exists('uploads/' . $media->media_file)) {
+        if ($post->media->count() > 0) {
+            foreach ($post->media as $media) {
+                if ($media->media_file && Storage::exists('uploads/' . $media->media_file)) {
                     Storage::delete('uploads/' . $media->media_file);
                 }
             }
