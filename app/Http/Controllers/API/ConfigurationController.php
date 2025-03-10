@@ -86,32 +86,34 @@ class ConfigurationController extends Controller
      * Display the specified resource.
      */
     public function show(Configuration $configuration)
-    {
-        // 🔹 Récupérer le score de la configuration spécifique
-        // On sélectionne l'ID de la configuration, le nombre total de votes et la moyenne des notes (rating_favorite)
-        $score = UserConfiguration::query()
-            ->selectRaw('configuration_id, COUNT(rating_favorite) as total_score, AVG(rating_favorite) as avg_score')
-            ->where('configuration_id', $configuration->id) // Filtrer par l'ID de la configuration reçue en paramètre
-            ->groupBy('configuration_id') // Grouper les résultats par configuration pour éviter les doublons
-            ->get();
+{
+    // 🔹 Récupérer le score de la configuration spécifique
+    // On sélectionne l'ID de la configuration, le nombre total de votes et la moyenne des notes (rating_favorite)
+    $score = UserConfiguration::query()
+        ->selectRaw('configuration_id, COUNT(rating_favorite) as total_score, AVG(rating_favorite) as avg_score')
+        ->where('configuration_id', $configuration->id) // Filtrer par l'ID de la configuration reçue en paramètre
+        ->groupBy('configuration_id') // Grouper les résultats par configuration pour éviter les doublons
+        ->get(); 
 
-        // 🔹 Trier les scores par ordre décroissant de la moyenne et récupérer le meilleur score pour cette configuration
-        $noteConfiguration = $score->sortByDesc('avg_score')->where('configuration_id', $configuration->id)->first();
+    // 🔹 Trier les scores par ordre décroissant de la moyenne et récupérer le meilleur score pour cette configuration
+    $noteConfiguration = $score->sortByDesc('avg_score')->where('configuration_id', $configuration->id)->first();
 
-        // 🔹 Récupérer tous les avis des utilisateurs pour cette configuration avec leur commentaire et leur pseudo (nick_name)
-        $ratings = UserConfiguration::query()
-            ->select('user_configurations.*', 'users.nick_name') // Sélectionner toutes les colonnes de user_configurations + le nom d'utilisateur
-            ->join('users', 'users.id', '=', 'user_configurations.user_id') // Joindre la table users pour récupérer le pseudo (nick_name)
-            ->where('user_configurations.configuration_id', $configuration->id) // Filtrer par l'ID de la configuration actuelle
-            ->get();
+    // 🔹 Récupérer tous les avis des utilisateurs pour cette configuration avec leur commentaire et leur pseudo (nick_name)
+    $ratings = UserConfiguration::query()
+        ->select('user_configurations.*', 'users.nick_name') // Sélectionner toutes les colonnes de user_configurations + le nom d'utilisateur
+        ->join('users', 'users.id', '=', 'user_configurations.user_id') // Joindre la table users pour récupérer le pseudo (nick_name)
+        ->where('user_configurations.configuration_id', $configuration->id) // Filtrer par l'ID de la configuration actuelle (corrected table name)
+        ->get();
 
-        return response()->json([
-            'configuration' => $configuration, // Informations de la configuration
-            'noteConfiguration' => $noteConfiguration, // Score le plus élevé basé sur la moyenne des notes
-            'score' => $score, // Liste des scores
-            'ratings' => $ratings // Liste des évaluations avec commentaires et pseudos
-        ]);
-    }
+
+    return response()->json([
+        'configuration' => $configuration, // Informations de la configuration
+        'noteConfiguration' => $noteConfiguration, // Score le plus élevé basé sur la moyenne des notes
+        'score' => $score, // Liste des scores
+        'ratings' => $ratings, // Liste des évaluations avec commentaires et pseudos
+    ]);
+}
+
 
 
 
