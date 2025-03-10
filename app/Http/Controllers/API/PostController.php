@@ -51,7 +51,7 @@ class PostController extends Controller
             'content_post_2' => 'required',
             'subtitle_post' => 'required|string',
             'description_post' => 'required|string',
-            'is_published' => 'required|boolean',
+            'is_published' => 'required',
             'order_post' => 'nullable|integer|min:1|max:10',
         ]);
 
@@ -70,9 +70,11 @@ class PostController extends Controller
      * Display the specified resource.
      */
     public function show(Post $post)
-    {
-        return response()->json($post->load('media'));
-    }
+{   
+
+    $post->load(['media', 'user', 'comments.user']);
+    return response()->json($post);
+}
 
     /**
      * Update the specified resource in storage.
@@ -89,10 +91,12 @@ class PostController extends Controller
             'is_published' => 'sometimes|boolean',
             'order_post' => 'sometimes|integer',
         ]);
-        // Get the authenticated user
+        
+        $nickName = $post->user ? $post->user->nick_name : null;
         $post->update($formFields);
         return response()->json([
-            'status' => 'Mise à jour effectuée avec succès'
+            'status' => 'Mise à jour effectuée avec succès',
+            'nick_name' => $nickName,
         ]);
     }
 

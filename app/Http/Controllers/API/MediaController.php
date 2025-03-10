@@ -140,12 +140,13 @@ class MediaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Media $media)
+    public function destroy(Media $medium)
     {
-        if ($media->media_file && Storage::exists('uploads/' . $media->media_file)) {
-            Storage::delete('uploads/' . $media->media_file);
+        if ($medium->media_file && Storage::exists('uploads/' . $medium->media_file)) {
+            Storage::delete('uploads/' . $medium->media_file);
         }
-        $media->delete();
+        
+        $medium->delete();
         return response()->json('Media supprimé');
     }
 }
