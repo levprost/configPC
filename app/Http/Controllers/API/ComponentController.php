@@ -14,11 +14,14 @@ class ComponentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $term = $request->query('term','');
+        $componentSearch = Component::search($term)->get();
         $components = Component::all()->load(['category', 'brand']);
         return response()->json([
             'components' => $components,
+            'componentSearch' => $componentSearch, 
         ]);
     }
     
