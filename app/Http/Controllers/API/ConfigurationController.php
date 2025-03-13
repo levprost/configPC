@@ -36,7 +36,6 @@ class ConfigurationController extends Controller
         'image_config' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
         'benchmark_config' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
         'user_id' => 'required|integer',
-        'components' => 'required|array',
         'components.*' => 'integer|exists:components,id'
     ]);
 
@@ -87,7 +86,7 @@ class ConfigurationController extends Controller
      */
     public function show(Configuration $configuration)
 {
-    // 🔹 Récupérer le score de la configuration spécifique
+    //  Récupérer le score de la configuration spécifique
     // On sélectionne l'ID de la configuration, le nombre total de votes et la moyenne des notes (rating_favorite)
     $score = UserConfiguration::query()
         ->selectRaw('configuration_id, COUNT(rating_favorite) as total_score, AVG(rating_favorite) as avg_score')
@@ -95,19 +94,17 @@ class ConfigurationController extends Controller
         ->groupBy('configuration_id') // Grouper les résultats par configuration pour éviter les doublons
         ->get(); 
 
-    // 🔹 Trier les scores par ordre décroissant de la moyenne et récupérer le meilleur score pour cette configuration
+    //  Trier les scores par ordre décroissant de la moyenne et récupérer le meilleur score pour cette configuration
     $noteConfiguration = $score->sortByDesc('avg_score')->where('configuration_id', $configuration->id)->first();
 
-    // 🔹 Récupérer tous les avis des utilisateurs pour cette configuration avec leur commentaire et leur pseudo (nick_name)
     $ratings = UserConfiguration::query()
         ->select('user_configurations.*', 'users.nick_name') // Sélectionner toutes les colonnes de user_configurations + le nom d'utilisateur
         ->join('users', 'users.id', '=', 'user_configurations.user_id') // Joindre la table users pour récupérer le pseudo (nick_name)
         ->where('user_configurations.configuration_id', $configuration->id) // Filtrer par l'ID de la configuration actuelle (corrected table name)
         ->get();
-
-
+    
     return response()->json([
-        'configuration' => $configuration, // Informations de la configuration
+        'configuration' => $configuration->load('components'), // Informations de la configuration
         'noteConfiguration' => $noteConfiguration, // Score le plus élevé basé sur la moyenne des notes
         'score' => $score, // Liste des scores
         'ratings' => $ratings, // Liste des évaluations avec commentaires et pseudos

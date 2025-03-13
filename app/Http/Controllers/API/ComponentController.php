@@ -53,7 +53,7 @@ class ComponentController extends Controller
             'consumption_component' => 'required|integer',
             'review_component' => 'required',
             'image_component' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
-            'video_component' => 'required|string',
+            'video_component' => 'nullable|string',
             'release_date_component' => 'required|date',
             'type_component' => 'required|string',
             'category_id' => 'required|integer',

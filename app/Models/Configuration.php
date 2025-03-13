@@ -29,7 +29,7 @@ class Configuration extends Model
     }
     public function components()
     {
-        return $this->belongsToMany(Component::class, 'configuration_component');
+        return $this->belongsToMany(Component::class, 'configuration_component','configuration_id', 'component_id');
     }
     public function userConfiguration()
     {

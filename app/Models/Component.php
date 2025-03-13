@@ -19,7 +19,7 @@ class Component extends Model
         'name_component',
         'price_component',
         'brand.name_brand',
-        'category_id'
+        'category.name_category'
     ];
     
      public function brand(){
@@ -30,6 +30,6 @@ class Component extends Model
      }
      public function configurations()
     {
-        return $this->belongsToMany(Configuration::class, 'configuration_component');
+        return $this->belongsToMany(Configuration::class, 'configuration_component','configuration_id', 'component_id');
     }
 }
