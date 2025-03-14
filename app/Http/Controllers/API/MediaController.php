@@ -15,8 +15,8 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $media = Media::all();
-        return response()->json($media)->simplePaginate(15);
+        $media = Media::paginate(10);
+        return response()->json($media);
     }
 
     /**

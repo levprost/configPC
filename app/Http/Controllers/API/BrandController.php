@@ -16,9 +16,10 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brands = Brand::all()->simplePaginate(15);
-        return response()->json($brands);
+        $brands = Brand::paginate(10);
+        return response()->json($brands->toArray()); 
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -81,7 +82,7 @@ class BrandController extends Controller
             $formFields['logo_brand'] = $brand->logo_brand; // Keep the old image
         }
         $brand->update($formFields);
-        return response()->json([$brand,'status' => 'Mise à jour effectuée avec succès']);
+        return response()->json([$brand, 'status' => 'Mise à jour effectuée avec succès']);
     }
 
     /**

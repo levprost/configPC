@@ -18,7 +18,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all()->load('media')->simplePaginate(15);
+        $posts = Post::with('user')->paginate(10);
+
         return response()->json($posts);
     }
     public function last()
@@ -70,11 +71,11 @@ class PostController extends Controller
      * Display the specified resource.
      */
     public function show(Post $post)
-{   
+    {
 
-    $post->load(['media', 'user', 'comments.user']);
-    return response()->json($post);
-}
+        $post->load(['media', 'user', 'comments.user']);
+        return response()->json($post);
+    }
 
     /**
      * Update the specified resource in storage.
@@ -91,7 +92,7 @@ class PostController extends Controller
             'is_published' => 'sometimes|boolean',
             'order_post' => 'sometimes|integer',
         ]);
-        
+
         $nickName = $post->user ? $post->user->nick_name : null;
         $post->update($formFields);
         return response()->json([

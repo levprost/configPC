@@ -17,8 +17,8 @@ class ComponentController extends Controller
     public function index(Request $request)
     {
         $term = $request->query('term','');
-        $componentSearch = Component::search($term)->get();
-        $components = Component::all()->load(['category', 'brand'])->simplePaginate(10);
+        $componentSearch = Component::search($term)->paginate(10);;
+        $components = Component::all()->load(['category', 'brand']);
         return response()->json([
             'components' => $components,
             'componentSearch' => $componentSearch, 
