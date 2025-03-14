@@ -18,7 +18,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all()->load('media');
+        $posts = Post::all()->load('media')->simplePaginate(15);
         return response()->json($posts);
     }
     public function last()

@@ -18,7 +18,7 @@ class ComponentController extends Controller
     {
         $term = $request->query('term','');
         $componentSearch = Component::search($term)->get();
-        $components = Component::all()->load(['category', 'brand']);
+        $components = Component::all()->load(['category', 'brand'])->simplePaginate(10);
         return response()->json([
             'components' => $components,
             'componentSearch' => $componentSearch, 

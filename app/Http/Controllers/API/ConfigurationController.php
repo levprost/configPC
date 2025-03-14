@@ -17,7 +17,7 @@ class ConfigurationController extends Controller
      */
     public function index()
     {
-        $configurations = Configuration::with(['user', 'userConfiguration'])->get();
+        $configurations = Configuration::with(['user', 'userConfiguration'])->get()->simplePaginate(15);
         return response()->json($configurations);
     }
 
