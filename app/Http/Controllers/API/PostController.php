@@ -18,8 +18,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('user')->paginate(10);
-
+        $posts = Post::with('user', 'media')->paginate(10);
         return response()->json($posts);
     }
     public function last()
@@ -29,15 +28,16 @@ class PostController extends Controller
     }
     public function indexPublished()
     {
-        $posts = Post::where('is_published', true)->get()->load('media');
+        $posts = Post::where('is_published', true)->get()->load('media', 'usre');
         return response()->json($posts);
     }
     public function indexOrder()
     {
-        $posts = DB::table('posts')
-            ->where('order_post', '!=', null)
+        $posts = Post::with('media')
+            ->whereNotNull('order_post')
             ->orderBy('order_post', 'asc')
             ->get();
+
         return response()->json($posts);
     }
     /**

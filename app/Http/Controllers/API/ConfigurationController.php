@@ -26,7 +26,6 @@ class ConfigurationController extends Controller
      */
     public function store(Request $request)
 {
-    // 🔹 Валидируем входные данные
     $request->validate([
         'name_config' => 'required|string',
         'title_config' => 'required|string',
@@ -39,7 +38,6 @@ class ConfigurationController extends Controller
         'components.*' => 'integer|exists:components,id'
     ]);
 
-    // 🔹 Обработка загрузки изображений
     $filename = null;
     if ($request->hasFile('image_config')) {
         $filenameWithExt = $request->file('image_config')->getClientOriginalName();
@@ -58,7 +56,6 @@ class ConfigurationController extends Controller
         $request->file('benchmark_config')->storeAs('uploads', $filenameBenchmark);
     }
 
-    // 🔹 Создание конфигурации
     $configuration = Configuration::create([
         'name_config' => $request->name_config,
         'title_config' => $request->title_config,
@@ -102,7 +99,7 @@ class ConfigurationController extends Controller
         ->join('users', 'users.id', '=', 'user_configurations.user_id') // Joindre la table users pour récupérer le pseudo (nick_name)
         ->where('user_configurations.configuration_id', $configuration->id) // Filtrer par l'ID de la configuration actuelle (corrected table name)
         ->get();
-    
+           
     return response()->json([
         'configuration' => $configuration->load('components'), // Informations de la configuration
         'noteConfiguration' => $noteConfiguration, // Score le plus élevé basé sur la moyenne des notes
