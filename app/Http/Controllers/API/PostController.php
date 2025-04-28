@@ -40,12 +40,18 @@ class PostController extends Controller
 
         return response()->json($posts);
     }
+    public function indexHome()
+    {
+        $posts = Post::with('media')->take(4)->get();
+        return response()->json($posts);
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $formFields = $request->validate([
+        
+    $formFields = $request->validate([
             'title_post' => 'required|string',
             'content_post' => 'required',
             'content_post_1' => 'required',
@@ -55,15 +61,15 @@ class PostController extends Controller
             'is_published' => 'required',
             'order_post' => 'nullable|integer|min:1|max:10',
         ]);
-
         $user = auth()->user();
         if (!$user) {
             return response()->json(['error' => 'Utilisateur non authentifié'], 401);
         }
         $formFields['user_id'] = $user->id;
-        Post::create($formFields);
+        $newPost = Post::create($formFields);
         return response()->json([
-            'status' => 'Création effectuée avec succès'
+            'status' => 'Création effectuée avec succès',
+            'newPost' => $newPost
         ]);
     }
 
@@ -82,6 +88,11 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        $user = auth()->user();
+        if (!$user || ($post->user_id !== $user->id && $user->role !== 'ROLE_ADMIN')) {
+            return response()->json(['error' => 'Action non autorisée'], 403);
+        }
+
         $formFields = $request->validate([
             'title_post' => 'sometimes|string',
             'content_post' => 'sometimes',
@@ -97,6 +108,7 @@ class PostController extends Controller
         $post->update($formFields);
         return response()->json([
             'status' => 'Mise à jour effectuée avec succès',
+            'new_post' => $post,
             'nick_name' => $nickName,
         ]);
     }
@@ -106,18 +118,25 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        Media::where('post_id', $post->id)->delete();
-        if ($post->media->count() > 0) {
-            foreach ($post->media as $media) {
-                if ($media->media_file && Storage::exists('uploads/' . $media->media_file)) {
-                    Storage::delete('uploads/' . $media->media_file);
-                }
+        $user = auth()->user();
+    
+        // Vérifier si l'utilisateur est authentifié, est le propriétaire du post OU est un administrateur
+        if (!$user || ($post->user_id !== $user->id || $user->role !== 'ROLE_ADMIN')) {
+            return response()->json(['error' => 'Action non autorisée'], 403);
+        }
+
+        $post->load('media'); 
+        foreach ($post->media as $media) {
+            if ($media->media_file && Storage::exists('uploads/' . $media->media_file)) {
+                Storage::delete('uploads/' . $media->media_file);
             }
         }
+        Media::where('post_id', $post->id)->delete();
         Comment::where('post_id', $post->id)->delete();
         $post->delete();
         return response()->json([
-            'status' => 'Suppression effectuée avec succès'
+            'status' => 'Suppression effectuée avec succès',
+            'postData' => $post,
         ]);
     }
 }

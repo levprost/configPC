@@ -15,7 +15,7 @@ class CategoryController extends Controller
     public function index()
     {
         $category = Category::paginate(10);
-        return response()->json($category)->simplePaginate(15);
+        return response()->json($category->toArray());
     }
 
     /**

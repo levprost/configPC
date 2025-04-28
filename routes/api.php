@@ -34,6 +34,7 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/last', [PostController::class, 'last']);
 Route::get('posts/published', [PostController::class, 'indexPublished']);
 Route::get('/posts/order', [PostController::class, 'indexOrder']);
+Route::get('/posts/home', [PostController::class, 'indexHome']); 
 Route::post('/posts', [PostController::class, 'store']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 Route::put('/posts/{post}', [PostController::class, 'update']);
@@ -50,7 +51,8 @@ Route::delete('/components/{component}', [ComponentController::class, 'destroy']
 
 //================================USER==============================
 
-Route::post('/login', [AuthController::class, 'login']); 
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']); 
 Route::middleware('auth:api')->group(function() { 
     Route::get('/currentuser', [UserController::class, 'currentUser']); 
     Route::post('/logout', [AuthController::class, 'logout']); 
